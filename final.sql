@@ -197,3 +197,21 @@ BEGIN
     SELECT claim_amount INTO p_price_amount FROM claims WHERE claim_id = p_claim_id;
 END //
 DELIMITER ;
+
+-- câu 2
+DELIMITER //
+CREATE PROCEDURE sp_cancel_policy ()
+BEGIN 
+	DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+    ROLLBACK;
+    SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT ='ĐÃ ROLLBACK VỀ LẠI TỪ ĐẦU';
+    END ;
+	START TRANSACTION;
+    UPDATE policies 
+    SET status = 'Cancelled';
+    UPDATE claim_processing_log 
+    SET action_detail = 'Customer requested cancellation';
+    COMMIT;
+END //
+DELIMITER ;
